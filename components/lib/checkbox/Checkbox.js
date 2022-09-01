@@ -12,25 +12,25 @@ export const Checkbox = React.memo(
         const onClick = (event) => {
             if (!props.disabled && !props.readOnly && props.onChange) {
                 const checked = isChecked();
-
+                
                 if (inputRef.current.checked === checked) {
-                    const value = checked ? props.falseValue : props.trueValue;
-                    props.onChange({
-                        originalEvent: event,
+                const value = checked ? props.falseValue : props.trueValue;
+                props.onChange({
+                    originalEvent: event,
+                    value: props.value,
+                    checked: value,
+                    stopPropagation: () => {},
+                    preventDefault: () => {},
+                    target: {
+                        type: 'checkbox',
+                        name: props.name,
+                        id: props.id,
                         value: props.value,
-                        checked: value,
-                        stopPropagation: () => {},
-                        preventDefault: () => {},
-                        target: {
-                            type: 'checkbox',
-                            name: props.name,
-                            id: props.id,
-                            value: props.value,
-                            checked: value
-                        }
-                    });
-                    inputRef.current.checked = !checked;
-                }
+                        checked: value
+                    }
+                });
+                inputRef.current.checked = !checked;
+            }
 
                 DomHandler.focus(inputRef.current);
                 event.preventDefault();
@@ -44,6 +44,12 @@ export const Checkbox = React.memo(
         const onBlur = () => {
             setFocusedState(false);
         };
+
+        const onKeyDown = (event) => {
+            if (event.code === 'Enter') {
+                onClick(event);
+            }
+        }
 
         const isChecked = () => {
             return props.checked === props.trueValue;
@@ -97,9 +103,10 @@ export const Checkbox = React.memo(
                             aria-label={props['aria-label']}
                             onFocus={onFocus}
                             onBlur={onBlur}
+                            onKeyDown={onKeyDown}
                             disabled={props.disabled}
                             readOnly={props.readOnly}
-                            required={props.required}
+                            required={props.required} 
                         />
                     </div>
                     <div className={boxClass}>{icon}</div>
